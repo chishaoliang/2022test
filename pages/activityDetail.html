@@ -1,0 +1,203 @@
+<div class="app-wrapper">
+	<div class="app-main positionBottom">
+		<view class="markWraper"></view>
+        <view class="loadingBox mlr14" wx:if="{{!data}}">
+            <div class="xzicon-loading"></div>
+            <div class="xzui-loadmore__tips">正在加载</div>
+        </view>
+        <!--品鉴会类型-->
+        <view class="activityDetail2_container" wx:elif="{{data.type==2&&data.ismaster!=1&&data.checkStatus!=2}}">
+        	<div class="activityDetail2_head tac">
+            	<div class="activityDetail2_logo"><image src="https://static.gedian.shop/16137910847991082.png" mode="widthFix" /></div>
+                <div class="activityDetail2_title"><span wx:for="{{data.title}}" class="{{index<2?' cRed':''}}">{{item}}</span></div>
+                <p class="activityDetail2_inviteTips">—期/待/你/的/到/来—</p>
+            </div>
+            <div class="plr10 tac">
+            	<p class="activityDetail2_title2">活动地址</p>
+                <div class="activityDetail2_content" wx:if="{{client=='wx'}}">
+                	<p class="c666 p14" wx:if="{{data.area&&data.address}}">{{data.realAddress}}</p>
+                </div>
+                <div class="activityDetail2_content" wx:else>
+                	<navigator url="https://m.amap.com/search/mapview/keywords={{data.realAddress}}" target="_blank" class="c666 p14"
+                    wx:if="{{data.area&&data.address}}">{{data.realAddress}} <span class="cRed">导航</span></navigator>
+                </div>
+            	<p class="activityDetail2_title2">活动日期</p>
+                <div class="activityDetail2_content">{{data.activityTime}}</div>
+                <p class="activityDetail2_title2">活动描述</p>
+                <div class="activityDetail2_content"><pre>{{data.content}}</pre></div>
+            </div>
+            <!--已报名待审核-->
+            <!--已报名已拒绝-->
+            <!--立即报名-->
+            <div wx:if="{{isUserLogin}}">
+            	<!--待审核-->
+                <div class="xzui-btn-app positionBottom activityDetail2_footBtn wait" wx:if="{{data.checkStatus==1}}">
+                    <button type="button" class="xzui-btn xzui-btn_b primary" size="large">审核中...</button>
+                </div>
+                <!--审核被拒-->
+                <div class="xzui-btn-app positionBottom activityDetail2_footBtn false" wx:elif="{{data.checkStatus==3}}">
+                    <button type="button" bindtap="submit" class="xzui-btn xzui-btn_b primary" size="large">很遗憾，审核被拒</button>
+                </div>
+                <div class="xzui-btn-app positionBottom activityDetail2_footBtn" wx:elif="{{!data.checkStatus}}">
+                	<button type="button" bindtap="submit" class="xzui-btn xzui-btn_b primary" size="large">立即报名</button>
+                </div>
+            </div>
+            <!--登录报名-->
+            <div wx:else>
+                <div class="xzui-btn-app positionBottom">
+                    <button type="button" bindtap="toLogin" class="xzui-btn xzui-btn_b primary" size="large">登录报名</button>
+                </div>
+            </div>
+        </view>
+        <!--普通类型-->
+        <view wx:else>
+            <div class="activityDetail_head pd15 clearfix">
+                <div class="picBox">
+                    <image src="{{data.inviteuser.headpic||data.userinfo.headpic}}" class="round" mode="widthFix" />
+                </div>
+                <div class="textBox">
+                    <p class="cBlue">{{data.inviteuser.username||data.userinfo.username}}</p>
+                    <p class="mt5 c666">邀请您参加活动</p>
+                    <button class="shareBtn" type="button" bindtap="toShare">立即分享</button>
+                </div>
+            </div>
+            <!--报名成功-->
+            <div class="hasBorder top left pd15 tac" wx:if="{{data.invitecode}}">
+                <p>您已经报名成功，报名人数：{{ismaster_maxuser}}</p>
+                <p>您的邀请码：<span class="cRed">{{data.invitecode}}</span></p>
+                <p wx:if="{{data.formList&&data.formList.length}}"><span class="displayIB plr5 cRed p16" wx:for="{{data.formList}}" wx:if="{{item.active==1}}">{{item.title}}</span></p>
+                <div class="mt10" wx:if="{{data.signstatus==0}}">
+                    <p>这是您的签到码</p>
+                    <p>到场后出示签到码签到</p>
+                    <div class="activityDetail_codeImage">
+                        <image src="{{qrcodePic}}" mode="widthFix" />
+                    </div>
+                </div>
+                <div class="ptb10" wx:elif="{{data.signstatus==1}}">
+                    <p class="cGreen">您已签到成功</p>
+                </div>
+                <div wx:if="{{data.grouppic}}">
+                    <p>这是活动群二维码</p>
+                    <p>请长按二维码入群</p>
+                    <div class="activityDetail_codeImage">
+                        <image src="{{data.grouppic}}" mode="widthFix" />
+                    </div>
+                </div>
+            </div>
+            <div class="hasBorder top left pd15">
+                <p class="c333 p18">{{data.title}}</p>
+                <p class="c666 p14">时间：{{data.activityTime}}</p>
+                <navigator url="https://m.amap.com/search/mapview/keywords={{data.realAddress}}" target="_blank" class="c666 p14"
+                    wx:if="{{data.area&&data.address}}">地址：{{data.realAddress}} <span class="cRed">导航</span></navigator>
+                <p class="c666 p14">已报名：{{data.joinnum}}人</p>
+                <p class="c666 p14">总参与：{{data.joinTotal}}人</p>
+                <div class="c333 mt5">
+                    <pre>{{data.content}}</pre>
+                </div>
+                <div wx:if="{{data.pics&&data.pics.length}}">
+                    <div class="activityDetail_picBox clearfix">
+                        <div class="activityDetail_picList" wx:for="{{data.pics}}">
+                            <div class="list">
+                                <image src="{{item}}" mode="widthFix" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="hasBorder top mt10 ptb15 pd15">
+                <div class="c333 p16">已报名{{data.joinnum}}人，总参与{{data.joinTotal}}人<span wx:if="{{data.ismaster==1}}">，已签到{{data.signinnum}}人</span><navigator wx:if="{{data.ismaster==1&&data.type==2}}" class="redBtn fr" url="../../agent/activityExamineList/activityExamineList?id={{options.id}}">审核列表</navigator></div>
+                <div class="activityDetail_searchBox" wx:if="{{data.ismaster==1}}">
+                    <search-bar label="搜索邀请码" placeholder="搜索邀请码" keyword="{{userForm.code}}" bindchange="changeKeyword"
+                        bindclose="closeKeyword"></search-bar>
+                </div>
+                <div wx:if="{{userList&&userList.length}}">
+                    <div class="activityDetail_inviteList mt10 pt10" wx:for="{{userList}}">
+                        <div class="activityDetail_head clearfix">
+                            <div class="picBox">
+                                <image src="{{item.headpic}}" class="round" mode="widthFix" />
+                            </div>
+                            <div class="textBox">
+                                <p class="c333">{{item.username}}
+                                    <span wx:if="{{data.ismaster==1}}"
+                                        style="margin-left: 5px;color: #F84438;">{{item.signstatus=='1'?'已签到':''}}</span>
+                                </p>
+                                <p class="mt5 c666"><span class="cBlue">{{item.inviteuser}}</span>邀请</p>
+                            </div>
+                            <div class="textBox p12" wx:if="{{data.ismaster==1}}">
+                                <div class="displayIB">手机：<span wx:if="{{client=='wx'}}" class="cBlue p14" data-tel="{{item.account}}" bindtap="callTel">{{item.account||'无'}}</span><navigator url="tel:{{item.account}}" wx:else class="cBlue p14">{{item.account||'无'}}</navigator></div>
+                                <div class="displayIB" style="margin-left:3px;">微信：<span class="cBlue p14" data-content="{{item.weixin}}" bindtap="copyThis">{{item.weixin||'无'}}</span></div>
+                            </div>
+                            <p class="codeNum c666" wx:if="{{data.ismaster==1}}">{{item.invitecode}}</p>
+                            <p class="maxuser c666 p18">+{{item.maxuser||1}}</p>
+                        </div>
+                    </div>
+                </div>
+                <view class="loadingBox mlr14" hidden="{{!showLoading}}">
+                    <div class="xzicon-loading"></div>
+                    <div class="xzui-loadmore__tips">正在加载</div>
+                </view>
+                <view class="noData mlr14" hidden="{{!showNoData}}">暂无数据</view>
+            </div>
+            <div wx:if="{{isUserLogin}}">
+                <div class="xzui-btn-app positionBottom" wx:if="{{showJoinBtn}}">
+                	<div class="displayFlex">
+                    	<div class="list mr10" wx:if="{{data.mustpay==1}}">
+                            <button type="button" bindtap="toMyTicket" class="xzui-btn xzui-btn_b primary" size="large">我的门票</button>
+                        </div>
+                        <div class="list">
+                             <button type="button" bindtap="submit" class="xzui-btn xzui-btn_b primary" size="large">{{data.mustpay==1?'购买门票':'立即报名'}}</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="xzui-btn-app positionBottom" wx:if="{{showCancelBtn}}">
+                    <div class="displayFlex">
+                    	<div class="list mr10" wx:if="{{data.mustpay==1}}">
+                            <button type="button" bindtap="toMyTicket" class="xzui-btn xzui-btn_b primary" size="large">我的门票</button>
+                        </div>
+                        <div class="list mr10" wx:elif="{{data.otheruser==1}}">
+                            <button type="button" bindtap="updateNum" class="xzui-btn xzui-btn_b primary" size="large">修改报名</button>
+                        </div>
+                        <div class="list">
+                            <button type="button" bindtap="cancelThis" class="xzui-btn xzui-btn_b primary" size="large">取消报名</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="xzui-btn-app positionBottom" wx:elif="{{data.ismaster!=1 && showFullBtn}}">
+                	<button type="button" class="xzui-btn xzui-btn_b primary gray" size="large">报名人数已满</button>
+                </div>
+            </div>
+            <div wx:else>
+                <div class="xzui-btn-app positionBottom">
+                    <button type="button" bindtap="toLogin" class="xzui-btn xzui-btn_b primary" size="large">登录报名</button>
+                </div>
+            </div>
+        </view>
+	</div>
+	<newShare id="newShareCon"></newShare>
+    <div class="signUp_dialog {{(showDialog?' show':'')}}">
+        <view class="signUp_body ptb5">
+            <div class="form-title clearfix tac">
+                <span class="p16" style="color:#3B3B3B;">立即报名</span>
+                <span class="fr p16" bindtap="toHideDialog"><i class="xzicon-close"></i></span>
+            </div>
+            <div class="hasBorder bottom left" wx:if="{{data.formList&&data.formList.length}}">
+            	<div class="form-list" wx:for="{{data.formList}}">
+                	<div class="form-list-item">{{item.title}}</div>
+                    <div class="form-list-item title long tar"><span data-index="{{index}}" bindtap="changeFormList" class="xzui-switch-new {{(item.active==1?' active':'')}}"></span></div>
+                </div>
+            </div>
+            <p class="plr15 c666 ptb5" wx:if="{{data.otheruser==1}}">请选择参加人数</p>
+            <view  wx:if="{{data.otheruser==1}}" class="plr15 ptb10" style="border-bottom:1px solid #e9e9e9;">
+                <div class="selectPeopleBox clearfix">
+                    <div class="selectPeopleList" wx:for="{{peopleList}}">
+                        <div class="list {{(maxuser==item?' active':'')}}" bindtap="selectThis" data-num="{{item}}">
+                            {{item}}</div>
+                    </div>
+                </div>
+            </view>
+            <view class="plr15 ptb15">
+                <button class="submitBtn" type="button" bindtap="toConfirmDialog">确定</button>
+            </view>
+        </view>
+    </div>
+</div>
